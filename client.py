@@ -10,14 +10,25 @@ def get_servername(client):
 def send_file(client, filename):
     with open(filename) as f:
         contents = f.read()
-    client.send("PUT %s HTTP/1.1\n" % filename)
-    client.send("Content-Length: %d\n\n", len(contents))
-    client.send(contents)
+    request = ""
+    request += "PUT %s HTTP/1.1\n" % filename
+    request += "Content-Length: %d\n\n" %len(contents)
+    request += contents
+    request += '\n'
+    with open('/tmp/request.txt', 'w') as r:
+        r.write(request)
+    with open('/tmp/request.txt') as r:
+        request = r.read()
+        
+    client.send(request)
 
 if __name__ == "__main__":
     client = socket.socket()
-    client.connect(('127.0.0.1', 8000))
+    ip = sys.argv[1]
+    port = int(sys.argv[2])
+    filename = sys.argv[3]
+    client.connect((ip, port))
     print(get_servername(client))
-    send_file(client, '/tmp/testfile')
+    send_file(client, filename)
     pass
 

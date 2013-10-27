@@ -16,7 +16,9 @@ class QuickServerRequestHandler(BaseHTTPRequestHandler):
 
         if 'content-length' not in self.headers:
             # 411 is "Content-Length not defined"
+            self.send_response(411)
             self.send_error(411)
+            return
 
         with open(filename, 'w') as out:
             content_length = int(self.headers['content-length'])

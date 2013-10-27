@@ -28,7 +28,6 @@ if __name__ == "__main__":
     port = int(sys.argv[2])
     filename = sys.argv[3]
     client.connect((ip, port))
-    print(get_servername(client))
     send_file(client, filename)
     pass
 

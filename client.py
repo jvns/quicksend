@@ -7,7 +7,7 @@ def get_servername(client):
     client.send("GET /servername\n\n")
     return client.recv(100000)
 
-def send_file(client, filename):
+def create_put_request(filename):
     with open(filename) as f:
         contents = f.read()
     request = ""
@@ -15,19 +15,18 @@ def send_file(client, filename):
     request += "Content-Length: %d\n\n" %len(contents)
     request += contents
     request += '\n'
-    with open('/tmp/request.txt', 'w') as r:
-        r.write(request)
-    with open('/tmp/request.txt') as r:
-        request = r.read()
-        
-    client.send(request)
+    return request
+
+def send_file(ip, port, filename):
+    sock = socket.socket()
+    sock.connect((ip, port))
+    request = create_put_request(filename)
+    sock.send(request)
+    sock.close()
 
 if __name__ == "__main__":
-    client = socket.socket()
-    ip = sys.argv[1]
-    port = int(sys.argv[2])
-    filename = sys.argv[3]
-    client.connect((ip, port))
-    send_file(client, filename)
+    ip, port, filename = sys.argv[1:4]
+    port = int(port)
+    send_file(ip, port, filename)
     pass
 

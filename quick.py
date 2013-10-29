@@ -36,8 +36,11 @@ class QuickServerRequestHandler(BaseHTTPRequestHandler):
 #     def __init__(self, server_address):
 #         super(self, server_address, QuickServerRequestHandler)
 
-if __name__ == "__main__":
-    server_address = ('', 8000)
+def start_server(port):
+    server_address = ('localhost', port)
     server = HTTPServer(server_address, QuickServerRequestHandler)
     server.serve_forever()
+
+if __name__ == "__main__":
+    start_server(8000)
 

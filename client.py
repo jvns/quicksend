@@ -28,5 +28,3 @@ if __name__ == "__main__":
     ip, port, filename = sys.argv[1:4]
     port = int(port)
     send_file(ip, port, filename)
-    pass
-

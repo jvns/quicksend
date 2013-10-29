@@ -1,7 +1,5 @@
 #!/usr/bin/env python2
 
-# How to bundle together the server name?
-
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 
 class QuickServerRequestHandler(BaseHTTPRequestHandler):
@@ -31,10 +29,6 @@ class QuickServerRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.send_header("Content-Length", str(len(name)))
         self.wfile.write(name)
-
-# class QuickServer(HTTPServer):
-#     def __init__(self, server_address):
-#         super(self, server_address, QuickServerRequestHandler)
 
 def start_server(port):
     server_address = ('localhost', port)

@@ -2,6 +2,21 @@
 
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 
+DEFAULT_PORT=12345
+
+def print_help():
+    print """Usage:
+
+To receive files:
+$ quick receive [port]
+
+To send files: 
+$ quick send hostname [port]
+
+The default port is %d.
+""" % DEFAULT_PORT
+
+
 class QuickServerRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path
@@ -18,9 +33,11 @@ class QuickServerRequestHandler(BaseHTTPRequestHandler):
             self.send_error(411)
             return
 
+        print "Receiving file %s... " % filename,
         with open(filename, 'w') as out:
             content_length = int(self.headers['content-length'])
             out.write(self.rfile.read(content_length))
+        print "Done!"
 
 
     def send_servername(self):
@@ -36,5 +53,6 @@ def start_server(port):
     server.serve_forever()
 
 if __name__ == "__main__":
-    start_server(8000)
+    print_help()
+    start_server(DEFAULT_PORT)
 

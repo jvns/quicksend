@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
 
+import sys
+
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 
 DEFAULT_PORT=12345
@@ -11,7 +13,7 @@ To receive files:
 $ quick receive [port]
 
 To send files: 
-$ quick send hostname [port]
+$ quick send hostname filename [port]
 
 The default port is %d.
 """ % DEFAULT_PORT
@@ -48,11 +50,42 @@ class QuickServerRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(name)
 
 def start_server(port):
+    print "Waiting for files on port %d...\n" % port
     server_address = ('localhost', port)
     server = HTTPServer(server_address, QuickServerRequestHandler)
     server.serve_forever()
 
-if __name__ == "__main__":
-    print_help()
-    start_server(DEFAULT_PORT)
+def parse_args(args):
+    if len(args) == 0:
+        return
+    action = args[0]
+    if action == 'receive':
+        port = args[1] if len(args) >= 2 else DEFAULT_PORT
+        return {'action': 'receive', 'port': port}
+    elif action == 'send':
+        if len(args) <= 2:
+            print "Not enough arguments for 'send'."
+            return
+        hostname, filename = args[1:3]
+        port = DEFAULT_PORT
+        if ':' in hostname:
+            hostname, port = machine.split(':')
+        return {
+            'action': 'send',
+            'port': port,
+            'hostname': hostname,
+            'filename': filename
+        }
+    else:
+        print "I don't know how to 'quick %s'. Sorry." % action
+        return
 
+
+if __name__ == "__main__":
+    config = parse_args(sys.argv[1:])
+    if config is None:
+        # Invalid arguments
+        print_help()
+        sys.exit(0)
+    elif config['action'] == 'receive':
+        start_server(config['port'])

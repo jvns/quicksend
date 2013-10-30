@@ -22,6 +22,7 @@ The default port is %d.
 
 class QuickServerRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        # TODO: not used yet
         path = self.path
         if path == "/servername":
             self.send_servername()
@@ -82,10 +83,6 @@ def parse_args(args):
         print "I don't know how to 'quick %s'. Sorry." % action
         return
 
-
-def get_servername(client):
-    client.send("GET /servername\n\n")
-    return client.recv(100000)
 
 def create_put_request(filename):
     with open(filename) as f:

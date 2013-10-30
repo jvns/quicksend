@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 import sys
+import socket
 
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 
@@ -60,7 +61,7 @@ def parse_args(args):
         return
     action = args[0]
     if action == 'receive':
-        port = args[1] if len(args) >= 2 else DEFAULT_PORT
+        port = int(args[1]) if len(args) >= 2 else DEFAULT_PORT
         return {'action': 'receive', 'port': port}
     elif action == 'send':
         if len(args) <= 2:
@@ -69,7 +70,8 @@ def parse_args(args):
         hostname, filename = args[1:3]
         port = DEFAULT_PORT
         if ':' in hostname:
-            hostname, port = machine.split(':')
+            hostname, port = hostname.split(':')
+        port = int(port)
         return {
             'action': 'send',
             'port': port,
@@ -81,6 +83,29 @@ def parse_args(args):
         return
 
 
+def get_servername(client):
+    client.send("GET /servername\n\n")
+    return client.recv(100000)
+
+def create_put_request(filename):
+    with open(filename) as f:
+        contents = f.read()
+    request = ""
+    request += "PUT %s HTTP/1.1\n" % filename
+    request += "Content-Length: %d\n\n" %len(contents)
+    request += contents
+    request += '\n'
+    return request
+
+def send_file(ip, port, filename):
+    sock = socket.socket()
+    sock.connect((ip, port))
+    request = create_put_request(filename)
+    sock.send(request)
+    sock.close()
+
+
+
 if __name__ == "__main__":
     config = parse_args(sys.argv[1:])
     if config is None:
@@ -89,3 +114,7 @@ if __name__ == "__main__":
         sys.exit(0)
     elif config['action'] == 'receive':
         start_server(config['port'])
+    elif config['action'] == 'send':
+        ip, port, filename = config['hostname'], config['port'], config['filename']
+        port = int(port)
+        send_file(ip, port, filename)

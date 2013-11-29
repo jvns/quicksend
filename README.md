@@ -1,7 +1,8 @@
 quicksend
 =========
 
-Tiny utility for sending files insecurely on your local network
+Tiny utility for sending files insecurely on your local network.
+Does not yet actually work.
 
 The idea is that to start a server, you can run
 
